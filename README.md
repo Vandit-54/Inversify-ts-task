@@ -1,24 +1,36 @@
--> This project is testing project which i am trying to build in ioc / inversify js structure 
+-> This is a wfh task 
 
--> In this project the flow would be like there will be main three parts the product side , the user side , the cart configurations 
+BMS : - 
 
--> The user intractions will be like 
-    - crud functionalitites 
-    - profile crud functionalities 
-    - maximum 5 profile per user 
-    - if the user wants to delete their account the profiles should be deleted first 
-    - User will be provided with access token : validity - 2D
-    - User will be provided with refresh token : validity - 7D
-    - otp login 
-    - password requirement for eveytime profile deletion (Double safety)
-    - If the user wants delete the account 
-            -> First check how many profiles are there exist for the user if none then procede with delete 
-            -> If there are profile existed throw an error you can remove this profile this profiles are still
-            active 
-    - Whenever any things is in the cart main user should also be mailed with those detials 
+-> The system allows users to manage books, authors, and categories within a bookstore inventory.
+ 
+->Features:
 
--> Product will be fetched from the third party api 
-   -- https://dummyjson.com/products
+ - Book Management:
+ 
+    - Create, retrieve, update, and delete books, with pagination, search and filter.
+    Each book has attributes such as title, author, category, ISBN, description, and price.
+  
+ - Author Management:
 
--> Cart intractions 
-  -- cart will be based on the profile every cart will contain profile name & profile i'd along side of cart i'd , product details , amount calculations , brand name , quantity feilds 
+   - Create, retrieve, update, and delete authors, with pagination, search and filter.
+    Each author has attributes such as name, biography, and nationality.
+  
+ - Category Management:
+
+  - Create, retrieve, update, and delete categories for books, with pagination, search and filter.
+  Categories can be fiction, non-fiction, romance, thriller, etc.
+  
+ - User Authentication:
+
+  - Implement user authentication using JWT tokens for secure access to API endpoints.
+
+
+  Optional:
+  
+    Author Login:
+    (Self)Book Management:
+
+
+
+
