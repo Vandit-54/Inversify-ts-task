@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IAuthor } from "../interfaces/Author.Interface";
 import { passwordHelper } from "../utils/passwordHelper";
+import { generateAccessToken } from "../utils/accessToken";
 
 const authorSchema: Schema<IAuthor> = new Schema ({
 
@@ -30,5 +31,7 @@ const authorSchema: Schema<IAuthor> = new Schema ({
 })
 
 authorSchema.pre("save",passwordHelper);
+
+authorSchema.methods.accessToken = generateAccessToken;
 
 export const Author = mongoose.model<IAuthor>('Author',authorSchema);

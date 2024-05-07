@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { CategoryService } from '../services/CategoryService';
+import { tokenVerificationMiddleware } from '../middelwares/auth.middelwear';
 
-@controller('/categories')
+@controller('/category')
 export class CategoryController {
     constructor(@inject(CategoryService) private categoryService: CategoryService) {}
 
-    @httpPost('/')
+    @httpPost('/create',tokenVerificationMiddleware)
     async createCategory(req: Request, res: Response): Promise<Response> {
         try {
             const category = await this.categoryService.createCategory(req.body);
@@ -17,34 +18,51 @@ export class CategoryController {
         }
     }
 
-    @httpGet('/:id')
-    async getCategoryById(req: Request, res: Response): Promise<Response> {
+    @httpGet('/all', tokenVerificationMiddleware) 
+    async getAllCategories(req: Request, res: Response): Promise<Response> {
         try {
-            const categoryId = req.params.id;
-            const category = await this.categoryService.getCategoryById(categoryId);
-            return res.status(200).json(category);
+                const { page = 1, limit = 10 } = req.query;
+                const categories = await this.categoryService.getAllCategories(parseInt(page as string), parseInt(limit as string));
+                return res.status(200).json(categories);
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
     }
 
-    @httpPut('/:id')
+    @httpGet('/:name',tokenVerificationMiddleware)
+    async getCategoryByName(req: Request, res: Response): Promise<Response> {
+        try {
+            const categoryName = req.params.name;
+            const category = await this.categoryService.getCategoryByName(categoryName);
+            if (category != null) {
+                return res.status(200).json(category);
+            }
+            return res.status(404).json({ message: "Category Not found"});
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+
+    @httpPut('/update/:name',tokenVerificationMiddleware)
     async updateCategory(req: Request, res: Response): Promise<Response> {
         try {
-            const categoryId = req.params.id;
-            const updatedCategory = await this.categoryService.updateCategory(categoryId, req.body);
+            const categoryName = req.params.name;
+            const updatedCategory = await this.categoryService.updateCategory(categoryName, req.body);
             return res.status(200).json(updatedCategory);
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
     }
 
-    @httpDelete('/:id')
+    @httpDelete('/delete/:name',tokenVerificationMiddleware)
     async deleteCategory(req: Request, res: Response): Promise<Response> {
         try {
-            const categoryId = req.params.id;
-            await this.categoryService.deleteCategory(categoryId);
-            return res.status(204).send();
+            const name = req.params.name;
+            const category = await this.categoryService.deleteCategory(name);
+            if (category != null) {
+                return res.status(200).json({message:"category deleted succesfully"});
+            }
+                return res.status(404).json({ message: "Category Not found"});
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }

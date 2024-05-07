@@ -18,7 +18,7 @@ export const tokenVerificationMiddleware = (req: Request, res: Response, next: N
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as JwtPayload;
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN) as JwtPayload;
         req.user = decoded;
         next();
     } catch (error) {

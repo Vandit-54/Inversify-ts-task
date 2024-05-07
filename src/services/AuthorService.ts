@@ -1,3 +1,4 @@
+// authorService.ts
 import { injectable } from 'inversify';
 import { Author } from '../models/authorModels';
 
@@ -12,21 +13,28 @@ export class AuthorService {
         }
     }
 
-    async getAuthorById(authorId: string): Promise<any> {
+    async login(email: any): Promise<any> {
         try {
-            const author = await Author.findById(authorId);
+            const author = await Author.findOne({email});
             return author;
         } catch (error) {
+            console.log(error);
             throw new Error('Failed to get author by ID');
         }
     }
 
     async updateAuthor(authorId: string, updateData: any): Promise<any> {
+
         try {
-            const author = await Author.findByIdAndUpdate(authorId, updateData, { new: true });
-            return author;
+            const user = await Author.findById(authorId);
+            if (!user) {
+                throw new Error('Author not found');
+            }
+            delete updateData.password;
+            const updatedUser = await Author.findByIdAndUpdate(authorId, updateData, { new: true }).select("-password");
+            return updatedUser;
         } catch (error) {
-            throw new Error('Failed to update author');
+            throw new Error('Failed to update user');
         }
     }
 

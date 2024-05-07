@@ -7,14 +7,13 @@ const bookSchema: Schema<IBook> = new Schema({
         required: [true, 'Please provide a title'] 
     },
     author: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'Author', 
-        required: [true, 'Please Provide Author Id'] 
+        type: String, 
+        required: [true, 'Please provide a author'] 
     },
-    category: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Category' 
-    }],
+    category: { 
+        type: String, 
+        required: [true, 'Please provide a Category'] 
+    },
     ISBN: { 
         type: String, 
         required: true 
