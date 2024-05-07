@@ -2,9 +2,12 @@
   "name": "inversify-ts-task",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/app.js",
+  "type": "commonjs",
   "scripts": {
-    "dev": "nodemon ts-node app.ts"
+    "start": "node dist/app.js",
+    "dev": "nodemon src/app.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -22,9 +25,7 @@
   },
   "homepage": "https://github.com/Vandit-54/Inversify-ts-task-1#readme",
   "dependencies": {
-    "@types/cookie-parser": "^1.4.7",
-    "@types/express-session": "^1.18.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "config": "^3.3.11",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
@@ -37,8 +38,12 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/config": "^3.3.4",
+    "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
     "@types/node": "^20.12.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"

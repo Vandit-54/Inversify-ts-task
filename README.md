@@ -32,5 +32,5 @@ BMS : -
     (Self)Book Management:
 
 
-
-
+insert into table_name (O-fees,i-fees) values (1,2) 
+on duplicate key 

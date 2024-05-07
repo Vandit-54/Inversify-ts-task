@@ -1,7 +1,27 @@
 import 'reflect-metadata';
+import dotenv from "dotenv";
 import  express  from 'express';
 import { InversifyExpressServer, cookies } from 'inversify-express-utils';
-import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import { container } from './inversify.config';
+import { connectDB } from './config/db';
 
+dotenv.config();
+
+const app = express();
+app.use(cookieParser());
+app.use(express.json());
+
+connectDB();
+
+// Set up InversifyExpressServer
+const server = new InversifyExpressServer(container, null, { rootPath: '/api' }, app);
+
+const appConfigured = server.build();
+
+const PORT = process.env.PORT || 3000
+
+appConfigured.listen(PORT, () => {
+    console.log('Server is running on port '+PORT);
+});
