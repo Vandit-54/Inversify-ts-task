@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { User } from '../models/userModels';
 
 declare global {
     namespace Express {
@@ -10,7 +11,7 @@ declare global {
 }
 
 
-export const tokenVerificationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const tokenVerificationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -19,6 +20,16 @@ export const tokenVerificationMiddleware = (req: Request, res: Response, next: N
 
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN) as JwtPayload;
+        if (!decoded) {
+            return res.status(401).json({message:"Token verification failed"})
+        }
+       
+        const userID = decoded.id;
+        const user = await User.findOne({ _id: userID });
+      
+        if (!user) {
+            return res.status(404).json({message:"User not found"})
+        }
         req.user = decoded;
         next();
     } catch (error) {

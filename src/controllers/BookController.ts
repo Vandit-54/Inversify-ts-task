@@ -5,11 +5,11 @@ import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-ex
 import { BookService } from '../services/BookService';
 import { tokenVerificationMiddleware } from '../middelwares/auth.middelwear';
 
-@controller('/books')
+@controller('/books',tokenVerificationMiddleware)
 export class BookController {
     constructor(@inject(BookService) private bookService: BookService) {}
 
-    @httpPost('/create',tokenVerificationMiddleware)
+    @httpPost('/create')
     async createBook(req: Request, res: Response): Promise<Response> {
         try {
             const book = await this.bookService.createBook(req.body);
@@ -19,7 +19,7 @@ export class BookController {
         }
     }
 
-    @httpGet('/all',tokenVerificationMiddleware)
+    @httpGet('/all')
     async getAllBooks(req: Request, res: Response): Promise<Response> {
         try {
             const { page = 1, limit = 10 } = req.query;
@@ -30,7 +30,7 @@ export class BookController {
         }
     }
 
-    @httpGet('/:name',tokenVerificationMiddleware)
+    @httpGet('/:name')
     async getBookById(req: Request, res: Response): Promise<Response> {
         try {
             const bookId = req.params.name;
@@ -41,7 +41,7 @@ export class BookController {
         }
     }
 
-    @httpPut('/update/:name',tokenVerificationMiddleware)
+    @httpPut('/update/:name')
     async updateBook(req: Request, res: Response): Promise<Response> {
         try {
             const bookId = req.params.name;
@@ -52,7 +52,7 @@ export class BookController {
         }
     }
 
-    @httpDelete('/delete/:name',tokenVerificationMiddleware)
+    @httpDelete('/delete/:name')
     async deleteBook(req: Request, res: Response): Promise<Response> {
         try {
             const bookId = req.params.name;

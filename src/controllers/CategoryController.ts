@@ -4,11 +4,11 @@ import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-ex
 import { CategoryService } from '../services/CategoryService';
 import { tokenVerificationMiddleware } from '../middelwares/auth.middelwear';
 
-@controller('/category')
+@controller('/category',tokenVerificationMiddleware)
 export class CategoryController {
     constructor(@inject(CategoryService) private categoryService: CategoryService) {}
 
-    @httpPost('/create',tokenVerificationMiddleware)
+    @httpPost('/create')
     async createCategory(req: Request, res: Response): Promise<Response> {
         try {
             const category = await this.categoryService.createCategory(req.body);
@@ -18,7 +18,7 @@ export class CategoryController {
         }
     }
 
-    @httpGet('/all', tokenVerificationMiddleware) 
+    @httpGet('/all') 
     async getAllCategories(req: Request, res: Response): Promise<Response> {
         try {
                 const { page = 1, limit = 10 } = req.query;
@@ -29,7 +29,7 @@ export class CategoryController {
         }
     }
 
-    @httpGet('/:name',tokenVerificationMiddleware)
+    @httpGet('/:name')
     async getCategoryByName(req: Request, res: Response): Promise<Response> {
         try {
             const categoryName = req.params.name;
@@ -43,7 +43,7 @@ export class CategoryController {
         }
     }
 
-    @httpPut('/update/:name',tokenVerificationMiddleware)
+    @httpPut('/update/:name')
     async updateCategory(req: Request, res: Response): Promise<Response> {
         try {
             const categoryName = req.params.name;
@@ -54,7 +54,7 @@ export class CategoryController {
         }
     }
 
-    @httpDelete('/delete/:name',tokenVerificationMiddleware)
+    @httpDelete('/delete/:name')
     async deleteCategory(req: Request, res: Response): Promise<Response> {
         try {
             const name = req.params.name;
