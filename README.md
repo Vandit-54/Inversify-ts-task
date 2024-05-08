@@ -18,12 +18,12 @@ BMS : -
   
  - Category Management:
 
-  - Create, retrieve, update, and delete categories for books, with pagination, search and filter.
+    - Create, retrieve, update, and delete categories for books, with pagination, search and filter.
   Categories can be fiction, non-fiction, romance, thriller, etc.
   
  - User Authentication:
 
-  - Implement user authentication using JWT tokens for secure access to API endpoints.
+    - Implement user authentication using JWT tokens for secure access to API endpoints.
 
 
   Optional:
