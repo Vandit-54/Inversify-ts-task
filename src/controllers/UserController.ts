@@ -43,8 +43,6 @@ export class UserController {
         }
     }
 
-
-
     @httpPut('/update', authMiddelwear)
     async updateUser(req: Request, res: Response): Promise<Response> {
         try {

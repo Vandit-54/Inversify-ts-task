@@ -34,7 +34,7 @@ export class CategoryController {
         try {
             const categoryName = req.params.name;
             const category = await this.categoryService.getCategoryByName(categoryName);
-            if (category != null) {
+            if (!category) {
                 return res.status(200).json(category);
             }
             return res.status(404).json({ message: "Category Not found"});

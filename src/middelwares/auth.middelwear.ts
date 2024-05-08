@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { User } from '../models/userModels';
 import { BaseMiddleware } from 'inversify-express-utils';
 
+// diffrent file
 declare global {
     namespace Express {
         interface Request {
@@ -26,8 +27,8 @@ export class authMiddelwear extends BaseMiddleware{
             return res.status(401).json({message:"Token verification failed"})
         }
        
-        const userID = decoded.id;
-        const user = await User.findOne({ _id: userID });
+        const userId = decoded.id;
+        const user = await User.findOne({ _id: userId });
       
         if (!user) {
             return res.status(404).json({message:"User not found"})
