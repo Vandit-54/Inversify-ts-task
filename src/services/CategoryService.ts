@@ -1,5 +1,7 @@
 import { injectable } from 'inversify';
 import { Category } from '../models/categoryModels';
+import { ApiError } from '../utils';
+import { HttpStatusCode } from '../enum';
 
 @injectable()
 export class CategoryService {
@@ -8,7 +10,7 @@ export class CategoryService {
             const category = await Category.create(categoryData);
             return category;
         } catch (error) {
-            throw new Error('Failed to create category');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Failed to create category");
         }
     }
 
@@ -18,7 +20,7 @@ export class CategoryService {
             const categories = await Category.find().skip(skip).limit(limit);
             return categories;
         } catch (error) {
-            throw new Error('Failed to get all categories');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Failed to get all categories");
         }
     }
 
@@ -27,38 +29,34 @@ export class CategoryService {
             const category = await Category.findOne({ name: categoryName });
             return category;
         } catch (error) {
-            throw new Error('Failed to get category by name');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Failed to get category by name");
         }
     }
 
     async updateCategory(categoryName: string, updatedData: any): Promise<any> {
         try {
-            const filter = { name: categoryName }; 
-            const options = { new: true }; 
-
-            const category = await Category.findOneAndUpdate(filter, updatedData, options);
+            const category = await Category.findOneAndUpdate({categoryName}, updatedData, {new: true});
 
             if (!category) {
-                throw new Error('Category not found');
+                throw new ApiError(HttpStatusCode.NOT_FOUND,"Category not found");
             }
 
             return category;
         } catch (error) {
-            throw new Error('Failed to update category: ' + error.message);
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,`Failed to update category - ${error.message}`)
         }
     }
 
 
     async deleteCategory(name: string): Promise<any> {
         try {
-            const filter = { name: name };
-            const category = await Category.findOneAndDelete(filter); 
+            const category = await Category.findOneAndDelete({name}); 
             if (!category) {
-                throw new Error('Category not found');
+                throw new ApiError(HttpStatusCode.NOT_FOUND,"Category not found");
             }
             return category;
         } catch (error) {
-            throw new Error('Failed to delete category: ' + error.message);
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,`Failed to delete category - ${error.message}`)
         }
     }
     

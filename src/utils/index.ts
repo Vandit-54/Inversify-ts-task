@@ -1,7 +1,7 @@
 import { generateAccessToken } from './accessToken';
 import { passwordHelper } from './passwordHelper';
-import { ApiError } from './ApiError';
-import { ApiResponse } from './ApiResponse';
+import { ApiError } from './apiError';
+import { ApiResponse } from './apiResponse';
 
 export{
     generateAccessToken,

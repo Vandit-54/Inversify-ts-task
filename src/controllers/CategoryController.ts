@@ -3,6 +3,8 @@ import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { CategoryService } from '../services';
 import { AuthMiddelwear } from '../middelwares';
+import { ApiResponse } from '../utils';
+import { HttpStatusCode } from '../enum';
 
 @controller('/category',AuthMiddelwear)
 export class CategoryController {
@@ -12,9 +14,11 @@ export class CategoryController {
     async createCategory(req: Request, res: Response): Promise<Response> {
         try {
             const category = await this.categoryService.createCategory(req.body);
-            return res.status(201).json(category);
+            return res.status(HttpStatusCode.CREATED).json(
+                new ApiResponse(HttpStatusCode.CREATED,category,"Category registered successfully")
+            )
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
