@@ -52,26 +52,28 @@ export class UserController {
     @httpPut('/update', AuthMiddelwear)
     async updateUser(req: Request, res: Response): Promise<Response> {
         try {
-            const userId = req.body._id;
+            const userId = req.user.id;
             const updatedUser = await this.userService.updateUser(userId, req.body);
-            return res.status(200).json(updatedUser);
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, { updatedUser: updatedUser}, "User updated succesfully")
+            )
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
     @httpDelete('/delete', AuthMiddelwear)
     async deleteUser(req: Request, res: Response): Promise<Response> {
         try {
-            const userId = req.body._id;
+            const userId = req.user.id;
             const status = await this.userService.deleteUser(userId);
-            if (status != null) {
-                return res.status(200).json({ message: "User deleted successfully" });
-            } else {
-                return res.status(404).json({ message: "User does not exist" });
-            }
+            if (!status) {
+                return res.status(HttpStatusCode.OK).json(
+                    new ApiResponse(HttpStatusCode.OK, null, "User Deleted succesfully")
+                )
+            } 
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 }
