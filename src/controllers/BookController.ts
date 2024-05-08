@@ -1,11 +1,11 @@
 // bookController.ts
 import { Request, Response } from 'express';
-import { injectable, inject } from 'inversify';
+import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
-import { BookService } from '../services/BookService';
-import { authMiddelwear } from '../middelwares/auth.middelwear';
+import { BookService } from '../services';
+import { AuthMiddelwear } from '../middelwares';
 
-@controller('/books',authMiddelwear)
+@controller('/books',AuthMiddelwear)
 export class BookController {
     constructor(@inject(BookService) private bookService: BookService) {}
 

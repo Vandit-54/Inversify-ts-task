@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { IUser } from '../interfaces/User.Interface';
-import { generateAccessToken } from '../utils/accessToken';
-import { passwordHelper } from '../utils/passwordHelper';
+import { IUser } from '../interfaces';
+import { generateAccessToken, passwordHelper } from '../utils';
 
 const userSchema: Schema<IUser> = new Schema({
 

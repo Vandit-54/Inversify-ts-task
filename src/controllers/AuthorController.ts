@@ -1,12 +1,12 @@
 // authorControler.ts
 import { Request, Response } from 'express';
-import { injectable, inject } from 'inversify';
+import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
-import { AuthorService } from '../services/AuthorService';
+import { AuthorService } from '../services';
 import bcrypt from 'bcryptjs';
-import { authMiddelwear } from '../middelwares/auth.middelwear';
+import { AuthMiddelwear } from '../middelwares';
 
-@controller('/author',authMiddelwear)
+@controller('/author',AuthMiddelwear)
 export class AuthorController {
     constructor(@inject(AuthorService) private authorService: AuthorService) {}
 

@@ -1,5 +1,7 @@
 import { injectable } from 'inversify';
 import { User } from '../models/userModels';
+import { ApiError } from '../utils';
+import { HttpStatusCode } from '../enum';
 
 @injectable()
 export class UserService {
@@ -8,7 +10,7 @@ export class UserService {
             const user = await User.create(userData);
             return user;
         } catch (error) {
-            throw new Error('Failed to create user');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Failed to create user")
         }
     }
 
@@ -17,7 +19,7 @@ export class UserService {
             const user = await User.findOne({email});
             return user;
         } catch (error) {
-            throw new Error('Failed to get user by email');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Failed to get user by email")
         }
     }
 

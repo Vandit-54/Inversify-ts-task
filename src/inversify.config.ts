@@ -1,13 +1,7 @@
 import { Container } from 'inversify';
-import { AuthorService } from './services/AuthorService';
-import { CategoryService } from './services/CategoryService';
-import { BookService } from './services/BookService';
-import { UserService } from './services/UserService';
-import { AuthorController } from './controllers/AuthorController';
-import { CategoryController } from './controllers/CategoryController';
-import { BookController } from './controllers/BookController';
-import { UserController } from './controllers/UserController';
-import { authMiddelwear } from './middelwares/auth.middelwear';
+import { AuthorService, CategoryService, BookService, UserService } from './services';
+import { AuthorController, BookController, CategoryController, UserController } from './controllers';
+import { AuthMiddelwear } from './middelwares/authMiddelwear';
 
 const container = new Container();
 
@@ -24,6 +18,6 @@ container.bind<BookController>(BookController).toSelf();
 container.bind<UserController>(UserController).toSelf();
 
 //Bind Middelwear
-container.bind<authMiddelwear>(authMiddelwear).toSelf();
+container.bind<AuthMiddelwear>(AuthMiddelwear).toSelf();
 
 export { container };

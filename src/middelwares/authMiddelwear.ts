@@ -12,7 +12,7 @@ declare global {
     }
 }
 
-export class authMiddelwear extends BaseMiddleware{
+export class AuthMiddelwear extends BaseMiddleware{
 
  async handler(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split(' ')[1];

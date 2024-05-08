@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { IAuthor } from "../interfaces/Author.Interface";
-import { passwordHelper } from "../utils/passwordHelper";
-import { generateAccessToken } from "../utils/accessToken";
+import { IAuthor } from "../interfaces";
+import { generateAccessToken, passwordHelper } from '../utils';
 
 const authorSchema: Schema<IAuthor> = new Schema ({
 

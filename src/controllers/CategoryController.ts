@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { injectable, inject } from 'inversify';
+import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
-import { CategoryService } from '../services/CategoryService';
-import { authMiddelwear } from '../middelwares/auth.middelwear';
+import { CategoryService } from '../services';
+import { AuthMiddelwear } from '../middelwares';
 
-@controller('/category',authMiddelwear)
+@controller('/category',AuthMiddelwear)
 export class CategoryController {
     constructor(@inject(CategoryService) private categoryService: CategoryService) {}
 
