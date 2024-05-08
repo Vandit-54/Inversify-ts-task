@@ -7,6 +7,7 @@ import { AuthorController } from './controllers/AuthorController';
 import { CategoryController } from './controllers/CategoryController';
 import { BookController } from './controllers/BookController';
 import { UserController } from './controllers/UserController';
+import { authMiddelwear } from './middelwares/auth.middelwear';
 
 const container = new Container();
 
@@ -21,5 +22,8 @@ container.bind<AuthorController>(AuthorController).toSelf();
 container.bind<CategoryController>(CategoryController).toSelf();
 container.bind<BookController>(BookController).toSelf();
 container.bind<UserController>(UserController).toSelf();
+
+//Bind Middelwear
+container.bind<authMiddelwear>(authMiddelwear).toSelf();
 
 export { container };

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { UserService } from '../services/UserService';
-import { tokenVerificationMiddleware } from '../middelwares/auth.middelwear';
+import { authMiddelwear } from '../middelwares/auth.middelwear';
 import bcrypt from 'bcryptjs';
 @controller('/user')
 export class UserController {
@@ -45,7 +45,7 @@ export class UserController {
 
 
 
-    @httpPut('/update', tokenVerificationMiddleware)
+    @httpPut('/update', authMiddelwear)
     async updateUser(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.body._id;
@@ -56,7 +56,7 @@ export class UserController {
         }
     }
 
-    @httpDelete('/delete', tokenVerificationMiddleware)
+    @httpDelete('/delete', authMiddelwear)
     async deleteUser(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.body._id;

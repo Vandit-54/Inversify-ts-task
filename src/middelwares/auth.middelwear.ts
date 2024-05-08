@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { User } from '../models/userModels';
+import { BaseMiddleware } from 'inversify-express-utils';
 
 declare global {
     namespace Express {
@@ -10,8 +11,9 @@ declare global {
     }
 }
 
+export class authMiddelwear extends BaseMiddleware{
 
-export const tokenVerificationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+ async handler(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -36,3 +38,4 @@ export const tokenVerificationMiddleware = async (req: Request, res: Response, n
         return res.status(401).json({ message: 'Invalid token.' });
     }
 };
+}

@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import  express  from 'express';
 import { InversifyExpressServer, cookies } from 'inversify-express-utils';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 import { container } from './inversify.config';
 import { connectDB } from './config/db';
 
