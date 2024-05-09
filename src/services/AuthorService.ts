@@ -1,9 +1,12 @@
 import { injectable } from 'inversify';
 import { Author } from '../models/authorModels';
+import { IAuthor } from '../interfaces';
+import { IAuthorService } from '../interfaces/authorServiceInterface';
+
 
 @injectable()
-export class AuthorService {
-    async createAuthor(authorData: any): Promise<any> {
+export class AuthorService implements IAuthorService {
+    async createAuthor(authorData: IAuthor): Promise<IAuthor> {
         try {
             const author = await Author.create(authorData);
             return author;
@@ -12,7 +15,7 @@ export class AuthorService {
         }
     }
 
-    async login(email: any): Promise<any> {
+    async login(email: string): Promise<IAuthor> {
         try {
             const author = await Author.findOne({email});
             return author;
@@ -22,7 +25,7 @@ export class AuthorService {
         }
     }
 
-    async updateAuthor(authorId: string, updateData: any): Promise<any> {
+    async updateAuthor(authorId: string, updateData: IAuthor): Promise<IAuthor> {
 
         try {
             const user = await Author.findById(authorId);

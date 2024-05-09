@@ -5,10 +5,11 @@ import { CategoryService } from '../services';
 import { AuthMiddleware } from '../middlewares';
 import { ApiResponse } from '../utils';
 import { HttpStatusCode } from '../enum';
+import { TYPES } from '../constants';
 
 @controller('/category', AuthMiddleware)
 export class CategoryController {
-    constructor(@inject(CategoryService) private categoryService: CategoryService) { }
+    constructor(@inject(TYPES.CategoryService) private categoryService: CategoryService) { }
 
     @httpPost('/create')
     async createCategory(req: Request, res: Response): Promise<Response> {

@@ -1,13 +1,12 @@
 // bookService.ts
 import { injectable } from 'inversify';
-import { Book } from '../models/bookModels';
-import { Author } from '../models/authorModels';
-import { Category } from '../models/categoryModels';
-import { log } from 'console';
+import { Book } from '../models';
+import { IBook } from '../interfaces';
+import { IBookService } from '../interfaces';
 
 @injectable()
-export class BookService {
-    async createBook(bookData: any): Promise<any> {
+export class BookService implements IBookService {
+    async createBook(bookData: IBook): Promise<IBook | null> {
         // const authorID = bookData.author;
         // const categoryID = bookData.category
         // const author = await Author.findById(authorID);
@@ -15,7 +14,7 @@ export class BookService {
         //     throw new Error('Author not found');
         // }
         // bookData.author = author.name
-        
+
         // const category = await Category.findById(categoryID);
         // if (!category) {
         //     throw new Error('Category not found');
@@ -30,40 +29,39 @@ export class BookService {
         }
     }
 
-    async getAllBooks(page: number, limit: number): Promise<any> {
+    async getAllBooks(page: number, limit: number, name?: string, price?: number, author?: string, category?: string): Promise<any> {
         try {
             const skip = (page - 1) * limit;
-            const books = await Book.find().skip(skip).limit(limit);
+            let query = {};
+
+            if (name) query['name'] = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
+            if (price) query['price'] = price;
+            if (author) query['author'] = author;
+            if (category) query['category'] = category;
+
+            const books = await Book.find(query).skip(skip).limit(limit);
             return books;
         } catch (error) {
             throw new Error('Failed to get all books');
         }
     }
 
-    async getBookById(bookName: string): Promise<any> {
-        try {
-            const book = await Book.findOne({ title: bookName });
-            return book;
-        } catch (error) {
-            throw new Error('Failed to get book by name');
-        }
-    }
-    
-    async updateBook(bookName: string, updateData: any): Promise<any> {
-        try {
-            const book = await Book.findOneAndUpdate({ title: bookName }, updateData, { new: true });
-            return book;
-        } catch (error) {
-            throw new Error('Failed to update book');
-        }
-    }
-    
 
-    async deleteBook(bookName: string): Promise<any> {
+    async updateBook(bookId: string, updateData: IBook): Promise<IBook | null> {
         try {
-            console.log(bookName);
-            const deletedBook = await Book.findOneAndDelete({ title: bookName });
-            console.log(deletedBook);
+            const updatedBook = await Book.findByIdAndUpdate(bookId, updateData, { new: true });
+            if (!updatedBook) {
+                throw new Error('Book not found');
+            }
+            return updatedBook;
+        } catch (error) {
+            throw new Error('Failed to update book: ' + error.message);
+        }
+    }
+
+    async deleteBook(bookId: string): Promise<any> {
+        try {
+            const deletedBook = await Book.findByIdAndDelete(bookId);
             if (!deletedBook) {
                 throw new Error('Book not found');
             }
@@ -72,5 +70,6 @@ export class BookService {
             throw new Error('Failed to delete book: ' + error.message);
         }
     }
-    
+
+
 }

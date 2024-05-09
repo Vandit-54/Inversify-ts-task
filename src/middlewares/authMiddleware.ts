@@ -5,6 +5,15 @@ import { BaseMiddleware } from 'inversify-express-utils';
 import { ApiError, ApiResponse } from '../utils';
 import { HttpStatusCode } from '../enum';
 
+
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: JwtPayload; 
+        }
+    }
+}
 export class AuthMiddleware extends BaseMiddleware{
 
  async handler(req: Request, res: Response, next: NextFunction) {

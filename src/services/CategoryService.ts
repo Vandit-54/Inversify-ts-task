@@ -2,10 +2,10 @@ import { injectable } from 'inversify';
 import { Category } from '../models/categoryModels';
 import { ApiError } from '../utils';
 import { HttpStatusCode } from '../enum';
-import { ICategory } from '../interfaces';
+import { ICategory, ICategoryService } from '../interfaces';
 
 @injectable()
-export class CategoryService {
+export class CategoryService implements ICategoryService {
     async createCategory(categoryData: ICategory): Promise<ICategory> {
         try {
             const category = await Category.create(categoryData);
@@ -54,5 +54,5 @@ export class CategoryService {
             throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, `Failed to delete category - ${error.message}`)
         }
     }    
-    
+
 }

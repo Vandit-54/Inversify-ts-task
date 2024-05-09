@@ -14,6 +14,21 @@ export class UserController {
     @httpPost('/register')
     async createUser(req: Request, res: Response): Promise<Response> {
         try {
+           
+            const userData = {
+                name:req.body.name,
+                username:req.body.username,
+                email: req.body.email,
+                password: req.body.password,
+                phonenumber: req.body.phoneNumber
+            }
+
+            console.log(Object.values(userData));
+
+            if(Object.values){
+
+            }
+
             const user = await this.userService.createUser(req.body);
             return res.status(HttpStatusCode.CREATED).json(
                 new ApiResponse(HttpStatusCode.OK, user, "User registered Successfully")
@@ -27,23 +42,27 @@ export class UserController {
     async getUserById(req: Request, res: Response): Promise<Response> {
         try {
             const { email, password } = req.body;
+
             const user = await this.userService.login(email);
             if (!user) {
                 return res.status(HttpStatusCode.NOT_FOUND).json({ message: "User not found" });
             }
             const comparePassword = bcrypt.compareSync(password, user.password);
-            if (comparePassword) {
-                const token = user.accessToken();
-                if (token) {
-                    return res.status(HttpStatusCode.OK).json(
-                        new ApiResponse(HttpStatusCode.ACCEPTED, { loggedInUser: user, token: token }, "User logged in succesfully")
-                    )
-                } else {
-                    return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Something went wrong" });
-                }
-            } else {
+
+            if (!comparePassword) {
                 return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid password" });
             }
+
+            const token = user.accessToken();
+
+            if (!token) {
+                return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Something went wrong" });
+            }
+
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.ACCEPTED, { loggedInUser: user, token: token }, "User logged in successfully")
+            );
+
 
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
@@ -56,7 +75,7 @@ export class UserController {
             const userId = req.user.id;
             const updatedUser = await this.userService.updateUser(userId, req.body);
             return res.status(HttpStatusCode.OK).json(
-                new ApiResponse(HttpStatusCode.OK, { updatedUser: updatedUser}, "User updated succesfully")
+                new ApiResponse(HttpStatusCode.OK, { updatedUser: updatedUser }, "User updated succesfully")
             )
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
@@ -72,7 +91,7 @@ export class UserController {
                 return res.status(HttpStatusCode.OK).json(
                     new ApiResponse(HttpStatusCode.OK, null, "User Deleted succesfully")
                 )
-            } 
+            }
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }

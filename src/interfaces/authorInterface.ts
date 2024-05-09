@@ -6,4 +6,5 @@ export interface IAuthor extends Document {
     password:string;
     biography: string;
     nationality: string;
+    accessToken():string;
 }
