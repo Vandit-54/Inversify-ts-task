@@ -4,9 +4,9 @@ import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { AuthorService } from '../services';
 import bcrypt from 'bcryptjs';
-import { AuthMiddelwear } from '../middelwares';
+import { AuthMiddleware } from '../middlewares';
 
-@controller('/author',AuthMiddelwear)
+@controller('/author',AuthMiddleware)
 export class AuthorController {
     constructor(@inject(AuthorService) private authorService: AuthorService) {}
 

@@ -1,4 +1,3 @@
-// authorService.ts
 import { injectable } from 'inversify';
 import { Author } from '../models/authorModels';
 

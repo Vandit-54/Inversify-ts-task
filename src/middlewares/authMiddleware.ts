@@ -5,16 +5,7 @@ import { BaseMiddleware } from 'inversify-express-utils';
 import { ApiError, ApiResponse } from '../utils';
 import { HttpStatusCode } from '../enum';
 
-// diffrent file
-declare global {
-    namespace Express {
-        interface Request {
-            user?: JwtPayload; 
-        }
-    }
-}
-
-export class AuthMiddelwear extends BaseMiddleware{
+export class AuthMiddleware extends BaseMiddleware{
 
  async handler(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split(' ')[1];

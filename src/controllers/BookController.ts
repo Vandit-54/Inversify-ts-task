@@ -3,9 +3,9 @@ import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { BookService } from '../services';
-import { AuthMiddelwear } from '../middelwares';
+import { AuthMiddleware } from '../middlewares';
 
-@controller('/books',AuthMiddelwear)
+@controller('/books',AuthMiddleware)
 export class BookController {
     constructor(@inject(BookService) private bookService: BookService) {}
 

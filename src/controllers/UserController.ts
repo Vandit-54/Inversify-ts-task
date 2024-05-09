@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { UserService } from '../services';
-import { AuthMiddelwear } from '../middelwares';
+import { AuthMiddleware } from '../middlewares';
 import bcrypt from 'bcryptjs';
 import { HttpStatusCode } from '../enum';
 import { ApiResponse } from '../utils';
+import { TYPES } from '../constants';
 @controller('/user')
 export class UserController {
-    constructor(@inject(UserService) private userService: UserService) { }
+    constructor(@inject(TYPES.UserService) private userService: UserService) { }
 
     @httpPost('/register')
     async createUser(req: Request, res: Response): Promise<Response> {
@@ -49,7 +50,7 @@ export class UserController {
         }
     }
 
-    @httpPut('/update', AuthMiddelwear)
+    @httpPut('/update', AuthMiddleware)
     async updateUser(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.user.id;
@@ -62,7 +63,7 @@ export class UserController {
         }
     }
 
-    @httpDelete('/delete', AuthMiddelwear)
+    @httpDelete('/delete', AuthMiddleware)
     async deleteUser(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.user.id;
