@@ -11,12 +11,14 @@ export function generateAccessToken(): string {
     id: string;
     name: string;
     email: string;
+    role: string;
   }
 
   const payload: PayloadInterface = {
     id: this._id,
     name: this.name,
     email: this.email,
+    role: this.role
   };
 
   try {

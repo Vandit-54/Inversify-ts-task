@@ -1,4 +1,4 @@
-import { ICategory } from "./categoryInterface";
+import { ICategory } from "./category.Interface";
 
 export interface ICategoryService {
     createCategory(categoryData:ICategory):Promise<ICategory>;

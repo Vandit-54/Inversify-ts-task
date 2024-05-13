@@ -1,11 +1,11 @@
-import { IAuthor } from "./authorInterface";
-import { IUser } from "./userInterface";
-import { ICategory } from "./categoryInterface";
-import { IBook } from "./bookInterface";
-import { IUserService } from "./userServiceInterface";
-import { ICategoryService } from "./categoryServiceInterface";
-import { IAuthorService } from "./authorServiceInterface";
-import { IBookService } from "./bookServiceInterface";
+import { IAuthor } from "./author.Interface";
+import { IUser } from "./user.Interface";
+import { ICategory } from "./category.Interface";
+import { IBook } from "./book.Interface";
+import { IUserService } from "./userService.Interface";
+import { ICategoryService } from "./categoryService.Interface";
+import { IAuthorService } from "./authorService.Interface";
+import { IBookService } from "./bookService.Interface";
 
 export {
     IAuthor,

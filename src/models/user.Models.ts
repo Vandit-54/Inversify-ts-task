@@ -23,10 +23,15 @@ const userSchema: Schema<IUser> = new Schema({
     minlength: [6, "Please provide a password with min length : 6 "],
     required: [true, "Please provide a password"]
   },
-  phoneNumber: {
+  phonenumber: {
     type: Number,
     min: [10, "Please provide a phoneNumber with min length : 10 "],
     required: [true, "Please provide a phoneNumber"]
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   }
 }, { timestamps: true });
 

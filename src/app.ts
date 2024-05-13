@@ -5,7 +5,7 @@ import { InversifyExpressServer, cookies } from 'inversify-express-utils';
 import cookieParser from 'cookie-parser';
 import { container } from './inversify.config';
 import { connectDB } from './config/database';
-
+import "./config/globals/express"
 dotenv.config();
 
 const app = express();

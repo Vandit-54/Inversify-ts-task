@@ -1,4 +1,4 @@
-import { IAuthor } from "./authorInterface";
+import { IAuthor } from "./author.Interface";
 
 export interface IAuthorService {
     createAuthor(auhorData:IAuthor):Promise<IAuthor>;

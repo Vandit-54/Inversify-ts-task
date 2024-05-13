@@ -2,11 +2,13 @@ import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { UserService } from '../services';
-import { AuthMiddleware } from '../middlewares';
+import { AuthMiddleware, RoleMiddleware } from '../middlewares';
 import bcrypt from 'bcryptjs';
 import { HttpStatusCode } from '../enum';
-import { ApiResponse } from '../utils';
+import { ApiError, ApiResponse } from '../utils';
 import { TYPES } from '../constants';
+import { IUser } from '../interfaces';
+
 @controller('/user')
 export class UserController {
     constructor(@inject(TYPES.UserService) private userService: UserService) { }
@@ -14,26 +16,30 @@ export class UserController {
     @httpPost('/register')
     async createUser(req: Request, res: Response): Promise<Response> {
         try {
+
+            const {name,username,email,password,phonenumber,role} = req.body;
+
+            if (
+                [name,username,email,password,phonenumber,role].some((field) => field?.trim() === "")
+            ) {
+                throw new ApiError(HttpStatusCode.BAD_REQUEST, "All fields are required")
+            }
+
+            const userData:IUser = {name,username,email,password,phonenumber,role}
            
-            const userData = {
-                name:req.body.name,
-                username:req.body.username,
-                email: req.body.email,
-                password: req.body.password,
-                phonenumber: req.body.phoneNumber
+            const user = await this.userService.createUser(userData);
+
+            if (!user) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Something went wrong while creating user")
             }
-
-            console.log(Object.values(userData));
-
-            if(Object.values){
-
-            }
-
-            const user = await this.userService.createUser(req.body);
+            
             return res.status(HttpStatusCode.CREATED).json(
                 new ApiResponse(HttpStatusCode.OK, user, "User registered Successfully")
             );
         } catch (error) {
+            if (error.code === 11000) {
+                return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message:"User alredy exists" });
+            }
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
@@ -63,7 +69,6 @@ export class UserController {
                 new ApiResponse(HttpStatusCode.ACCEPTED, { loggedInUser: user, token: token }, "User logged in successfully")
             );
 
-
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
@@ -73,7 +78,17 @@ export class UserController {
     async updateUser(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.user.id;
-            const updatedUser = await this.userService.updateUser(userId, req.body);
+            
+            const {name,username,email,password,phonenumber} = req.body;
+
+            const userData:IUser = {name,username,email,password,phonenumber}
+
+            const updatedUser = await this.userService.updateUser(userId, userData);
+
+            if (!updatedUser) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Something went wrong while updating user")
+            }
+
             return res.status(HttpStatusCode.OK).json(
                 new ApiResponse(HttpStatusCode.OK, { updatedUser: updatedUser }, "User updated succesfully")
             )
@@ -88,10 +103,11 @@ export class UserController {
             const userId = req.user.id;
             const status = await this.userService.deleteUser(userId);
             if (!status) {
-                return res.status(HttpStatusCode.OK).json(
-                    new ApiResponse(HttpStatusCode.OK, null, "User Deleted succesfully")
-                )
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR,"Something went wrong while deleting user")
             }
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, '',"User Deleted succesfully")
+            )
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }

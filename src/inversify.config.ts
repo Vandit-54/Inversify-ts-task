@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { AuthorService, CategoryService, BookService, UserService } from './services';
 import { AuthorController, BookController, CategoryController, UserController } from './controllers';
-import { AuthMiddleware } from './middlewares/authMiddleware';
+import { AuthMiddleware, RoleMiddleware } from './middlewares';
 import { IUserService, IAuthorService, ICategoryService, IBookService } from './interfaces';
 import { TYPES } from './constants';
 
@@ -22,5 +22,6 @@ container.bind<UserController>(UserController).toSelf();
 
 //Bind Middelwear
 container.bind<AuthMiddleware>(AuthMiddleware).toSelf();
+container.bind<RoleMiddleware>(RoleMiddleware).toSelf();
 
 export { container };

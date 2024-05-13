@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
-import { Author } from '../models/authorModels';
+import { Author } from '../models/author.Models';
 import { IAuthor } from '../interfaces';
-import { IAuthorService } from '../interfaces/authorServiceInterface';
+import { IAuthorService } from '../interfaces/authorService.Interface';
 
 
 @injectable()

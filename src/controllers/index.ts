@@ -1,7 +1,7 @@
-import { AuthorController } from "./authorController";
-import { BookController } from "./bookController";
-import { CategoryController } from "./categoryController";
-import { UserController } from "./userController";
+import { AuthorController } from "./author.Controller";
+import { BookController } from "./book.Controller";
+import { CategoryController } from "./category.Controller";
+import { UserController } from "./user.Controller";
 
 export {
     AuthorController,

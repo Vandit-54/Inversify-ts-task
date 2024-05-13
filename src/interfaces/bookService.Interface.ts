@@ -1,4 +1,4 @@
-import { IBook } from "./bookInterface";
+import { IBook } from "./book.Interface";
 
 export interface IBookService {
     createBook(bookData: IBook): Promise<IBook | null>;

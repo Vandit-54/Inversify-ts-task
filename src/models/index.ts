@@ -1,7 +1,7 @@
-import { Author } from "./authorModels";
-import { Book } from "./bookModels";
-import { Category } from "./categoryModels";
-import { User } from "./userModels";
+import { Author } from "./author.Models";
+import { Book } from "./book.Models";
+import { Category } from "./category.Models";
+import { User } from "./user.Models";
 
 export{
     Author,

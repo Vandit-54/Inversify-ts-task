@@ -1,4 +1,4 @@
-import { IUser } from "./userInterface";
+import { IUser } from "./user.Interface";
 
 export interface IUserService {
     createUser(user:IUser):Promise<IUser|null>;

@@ -1,7 +1,7 @@
-import { AuthorService } from "./authorService";
-import { BookService } from "./bookService";
-import { CategoryService } from "./categoryService";
-import { UserService } from "./userService";
+import { AuthorService } from "./author.Service";
+import { BookService } from "./book.Service";
+import { CategoryService } from "./category.Service";
+import { UserService } from "./user.Service";
 
 export {
     AuthorService,

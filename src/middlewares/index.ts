@@ -1,5 +1,7 @@
-import { AuthMiddleware } from "./authMiddleware";
+import { AuthMiddleware } from "./auth.Middleware";
+import { RoleMiddleware } from "./role.middleware";
 
 export{
-    AuthMiddleware
+    AuthMiddleware,
+    RoleMiddleware
 };
