@@ -3,47 +3,58 @@ import { injectable } from 'inversify';
 import { Book } from '../models';
 import { IBook } from '../interfaces';
 import { IBookService } from '../interfaces';
+import { Types } from 'mongoose';
 
 @injectable()
 export class BookService implements IBookService {
     async createBook(bookData: IBook): Promise<IBook | null> {
-        // const authorID = bookData.author;
-        // const categoryID = bookData.category
-        // const author = await Author.findById(authorID);
-        // if (!author) {
-        //     throw new Error('Author not found');
-        // }
-        // bookData.author = author.name
-
-        // const category = await Category.findById(categoryID);
-        // if (!category) {
-        //     throw new Error('Category not found');
-        // }
-        // bookData.category = category.name
-
-        try {
             const book = await Book.create(bookData);
             return book;
-        } catch (error) {
-            throw new Error('Failed to create book');
-        }
     }
 
-    async getAllBooks(page: number, limit: number, name?: string, price?: number, author?: string, category?: string): Promise<any> {
-        try {
-            const skip = (page - 1) * limit;
-            let query = {};
-
-            if (name) query['name'] = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
-            if (price) query['price'] = price;
-            if (author) query['author'] = author;
-            if (category) query['category'] = category;
-
-            const books = await Book.find(query).skip(skip).limit(limit);
-            return books;
-        } catch (error) {
-            throw new Error('Failed to get all books');
-        }
+    async  getAllBooks(page: number, limit: number, name?: string, price?: number, author?: string, category?: string) {
+        const match: any = {};
+    
+        if (name) match.name = { $regex: name, $options: 'i' };  
+        if (price) match.price = price;
+        if (author) match.author = new Types.ObjectId(author);
+        if (category) match.category = new Types.ObjectId(category);
+    
+        const books = await Book.aggregate([
+            { $match: match },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            {
+                $addFields: {
+                    authorName: { $arrayElemAt: ['$author.name', 0] },
+                    categoryName: { $arrayElemAt: ['$category.name', 0] }
+                }
+            },
+            {
+                $project: {
+                    author: 0,
+                    category: 0
+                }
+            },
+            { $skip: (page - 1) * limit },
+            { $limit: limit }
+        ]).exec();
+    
+        return books;
     }
 
 

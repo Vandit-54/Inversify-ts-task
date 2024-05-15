@@ -4,21 +4,34 @@ import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete, TYPE } from 'inversify-express-utils';
 import { AuthorService } from '../services';
 import bcrypt from 'bcryptjs';
-import { AuthMiddleware } from '../middlewares';
+import { AuthMiddleware, RoleMiddleware } from '../middlewares';
 import { TYPES } from '../constants';
+import { ApiError, ApiResponse } from '../utils';
+import { HttpStatusCode } from '../enum';
+import { IAuthor } from '../interfaces';
+import mongoose from 'mongoose';
 
-@controller('/author',AuthMiddleware)
+@controller('/author', AuthMiddleware)
 export class AuthorController {
-    constructor(@inject(TYPES.AuthorService) private authorService: AuthorService) {}
+    constructor(@inject(TYPES.AuthorService) private authorService: AuthorService) { }
 
-    @httpPost('/register')
+    @httpPost('/register', RoleMiddleware)
     async createAuthor(req: Request, res: Response): Promise<Response> {
         try {
-            const author = await this.authorService.createAuthor(req.body);
-            return res.status(201).json(author);
+            const { name, email, password, biography, nationality } = req.body
+            const authorData = { name, email, password, biography, nationality };
+            const author = await this.authorService.createAuthor(authorData);
+            if (!author) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong while creating author")
+            }
+            return res.status(HttpStatusCode.CREATED).json(
+                new ApiResponse(HttpStatusCode.OK, author, "Author registerd successfully")
+            );
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: error.message });
+            if (error.code === 11000) {
+                return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "User alredy exists" });
+            }
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
@@ -27,49 +40,79 @@ export class AuthorController {
         try {
             const { email, password } = req.body;
             const author = await this.authorService.login(email);
+
             if (!author) {
-                res.status(404).json({ message: "Author not found" });
+                return res.status(HttpStatusCode.NOT_FOUND).json({ message: "Author not found" });
             }
             const comparePassword = bcrypt.compareSync(password, author.password);
-            if (comparePassword) {
-                const token = author.accessToken();
-                if (token) {
-                    return res.status(200).json({ data: author, token: token });
-                } else {
-                    return res.status(400).json({ message: "Something went wrong" });
-                }
-            } else {
-                return res.status(400).json({ message: "Invalid password" });
+
+            if (!comparePassword) {
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid password" });
             }
 
+            const token = author.accessToken();
+
+            if (!token) {
+                return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Something went wrong" });
+            }
+
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.ACCEPTED, { loggedInAuthor: author, token: token }, "Author logged in successfully")
+            );
+
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
     @httpPut('/update')
     async updateAuthor(req: Request, res: Response): Promise<Response> {
         try {
-            const authorId = req.body._id;
-            const updatedAuthor = await this.authorService.updateAuthor(authorId, req.body);
-            return res.status(200).json(updatedAuthor);
+            const authorId = req.query.id as string;
+
+            if (!authorId) {
+                throw new ApiError(HttpStatusCode.BAD_REQUEST, "Author ID is required");
+            }
+            const objectId = new mongoose.Types.ObjectId(authorId);
+
+            const { name, email, password, biography, nationality } = req.body;
+
+            const userData: IAuthor = { name, email, password, biography, nationality };
+
+            const updatedUser = await this.authorService.updateAuthor(objectId, userData);
+
+            if (!updatedUser) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong while updating author")
+            }
+
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, { updatedUser: updatedUser }, "author updated succesfully")
+            )
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
-    @httpDelete('/delete')
+
+    @httpDelete('/delete', RoleMiddleware)
     async deleteAuthor(req: Request, res: Response): Promise<Response> {
         try {
-            const authorId = req.body._id;
-            const status = await this.authorService.deleteAuthor(authorId);
-            if (status != null) {
-                return res.status(200).json({ message: "Author deleted successfully" });
-            } else {
-                return res.status(404).json({ message: "Author does not exist" });
+            const authorId = req.query.id as string;
+
+            if (!authorId) {
+                throw new ApiError(HttpStatusCode.BAD_REQUEST, "Author ID is required");
             }
+            const objectId = new mongoose.Types.ObjectId(authorId);
+            
+            const status = await this.authorService.deleteAuthor(objectId);
+            if (!status) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong while deleting author")
+            }
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, '', "Author Deleted succesfully")
+            )
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 }

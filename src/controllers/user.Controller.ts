@@ -81,7 +81,7 @@ export class UserController {
             
             const {name,username,email,password,phonenumber} = req.body;
 
-            const userData:IUser = {name,username,email,password,phonenumber}
+            const userData:IUser = {name,username,email,password,phonenumber};
 
             const updatedUser = await this.userService.updateUser(userId, userData);
 

@@ -3,11 +3,12 @@ import { inject } from 'inversify';
 import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-express-utils';
 import { CategoryService } from '../services';
 import { AuthMiddleware, RoleMiddleware } from '../middlewares';
-import { ApiResponse,ApiError } from '../utils';
+import { ApiResponse, ApiError } from '../utils';
 import { HttpStatusCode } from '../enum';
 import { TYPES } from '../constants';
+import mongoose from 'mongoose';
 
-@controller('/category', AuthMiddleware,RoleMiddleware)
+@controller('/category', AuthMiddleware, RoleMiddleware)
 export class CategoryController {
     constructor(@inject(TYPES.CategoryService) private categoryService: CategoryService) { }
 
@@ -25,7 +26,7 @@ export class CategoryController {
         } catch (error) {
             if (error instanceof ApiError) {
                 return res.status(error.statusCode).json({ message: error.message });
-            } 
+            }
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
@@ -37,40 +38,63 @@ export class CategoryController {
             const categories = await this.categoryService.getAllCategories(name as string, parseInt(page as string), parseInt(limit as string));
             if (!categories || categories.length === 0) {
                 return res.status(HttpStatusCode.NOT_FOUND).json(
-                    new ApiResponse(HttpStatusCode.NOT_FOUND,"","Category does not exists!")
+                    new ApiResponse(HttpStatusCode.NOT_FOUND, "", "Category does not exists!")
                 );
             }
             return res.status(HttpStatusCode.OK).json(
-                new ApiResponse(HttpStatusCode.OK,categories)
+                new ApiResponse(HttpStatusCode.OK, categories)
             );
         } catch (error) {
             return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
-    @httpPut('/update/:id')
+    @httpPut('/update')
     async updateCategory(req: Request, res: Response): Promise<Response> {
         try {
-            const categoryId = req.params.id;
-            const updatedCategory = await this.categoryService.updateCategory(categoryId, req.body);
-            return res.status(200).json(updatedCategory);
+            const categoryId = req.query.id as string;
+            if (!categoryId) {
+                throw new ApiError(HttpStatusCode.BAD_REQUEST, "Category ID is required");
+            }
+            const objectId = new mongoose.Types.ObjectId(categoryId);
+
+            const {name} = req.body;
+            const updatedCategory = await this.categoryService.updateCategory(objectId, name);
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, updatedCategory)
+            );
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error.name === "BSONError") {
+                return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid ObjectId format" });
+            } else if (error instanceof ApiError) {
+                return res.status(error.statusCode).json({ message: error.message });
+            } else {
+                return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
+            }
         }
     }
 
 
-    @httpDelete('/delete/:id')
+    @httpDelete('/delete')
     async deleteCategory(req: Request, res: Response): Promise<Response> {
         try {
-            const id = req.params.id;
-            const category = await this.categoryService.deleteCategory(id);
+            const categoryId = req.query.id as string;
+            const objectId = new mongoose.Types.ObjectId(categoryId);
+            const category = await this.categoryService.deleteCategory(objectId);
             if (category != null) {
-                return res.status(200).json({ message: "Category deleted successfully" });
+                return res.status(HttpStatusCode.OK).json(
+                    { message: "Category deleted successfully" }
+                );
             }
             return res.status(404).json({ message: "Category not found" });
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error.name === "BSONError") {
+                return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid ObjectId format" });
+            } else if (error instanceof ApiError) {
+                return res.status(error.statusCode).json({ message: error.message });
+            } else {
+                return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
+            }
         }
     }
 

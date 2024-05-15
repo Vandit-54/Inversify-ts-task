@@ -1,10 +1,8 @@
-import { Document } from 'mongoose';
-
-export interface IAuthor extends Document {
+export interface IAuthor {
     name: string;
     email:string;
     password:string;
     biography: string;
     nationality: string;
-    accessToken():string;
+    accessToken?():string;
 }

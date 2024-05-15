@@ -2,50 +2,45 @@ import { injectable } from 'inversify';
 import { Author } from '../models/author.Models';
 import { IAuthor } from '../interfaces';
 import { IAuthorService } from '../interfaces/authorService.Interface';
-
+import { Types } from 'mongoose';
 
 @injectable()
 export class AuthorService implements IAuthorService {
     async createAuthor(authorData: IAuthor): Promise<IAuthor> {
-        try {
-            const author = await Author.create(authorData);
-            return author;
-        } catch (error) {
-            throw new Error('Failed to create author');
-        }
+        const author = await Author.create(authorData);
+        return author;
     }
 
     async login(email: string): Promise<IAuthor> {
-        try {
-            const author = await Author.findOne({email});
-            return author;
-        } catch (error) {
-            console.log(error);
-            throw new Error('Failed to get author by ID');
-        }
+        const author = await Author.findOne({ email });
+        return author;
     }
 
-    async updateAuthor(authorId: string, updateData: IAuthor): Promise<IAuthor> {
+    async updateAuthor(authorId: Types.ObjectId, updateData: IAuthor): Promise<IAuthor> {
 
-        try {
-            const user = await Author.findById(authorId);
-            if (!user) {
-                throw new Error('Author not found');
+        delete updateData.password;
+
+        const filter = {
+            _id: authorId
+        }
+        const update = {
+            $set: {
+                name: updateData.name,
+                email: updateData.email,
+                biography: updateData.biography,
+                nationality: updateData.nationality
             }
-            delete updateData.password;
-            const updatedUser = await Author.findByIdAndUpdate(authorId, updateData, { new: true }).select("-password");
-            return updatedUser;
-        } catch (error) {
-            throw new Error('Failed to update user');
         }
+        const options = {
+            new: true
+        }
+
+        const updatedUser = await Author.findByIdAndUpdate(filter, update, options).select("-password");
+        return updatedUser;
     }
 
-    async deleteAuthor(authorId: string): Promise<any> {
-        try {
-            await Author.findByIdAndDelete(authorId);
-            return { message: 'Author deleted successfully' };
-        } catch (error) {
-            throw new Error('Failed to delete author');
-        }
+    async deleteAuthor(authorId: Types.ObjectId): Promise<any> {
+        const author = await Author.findByIdAndDelete(authorId);
+        return author;
     }
 }

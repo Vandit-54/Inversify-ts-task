@@ -5,6 +5,8 @@ import { controller, httpPost, httpGet, httpPut, httpDelete } from 'inversify-ex
 import { BookService } from '../services';
 import { AuthMiddleware } from '../middlewares';
 import { TYPES } from '../constants';
+import { HttpStatusCode } from '../enum';
+import { ApiError, ApiResponse } from '../utils';
 
 @controller('/books', AuthMiddleware)
 export class BookController {
@@ -13,14 +15,24 @@ export class BookController {
     @httpPost('/create')
     async createBook(req: Request, res: Response): Promise<Response> {
         try {
-            const book = await this.bookService.createBook(req.body);
-            return res.status(201).json(book);
+            const { title, author, category, ISBN, description, price } = req.body;
+            const bookData = { title, author, category, ISBN, description, price }
+            const book = await this.bookService.createBook(bookData);
+            if (!book) {
+                return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Something went wring while creating the book!" })
+            }
+            return res.status(HttpStatusCode.CREATED).json(
+                new ApiResponse(HttpStatusCode.CREATED, book, "book registered successfully")
+            )
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            if (error instanceof ApiError) {
+                return res.status(error.statusCode).json({ message: error.message });
+            }
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
-    @httpGet('/all')
+    @httpGet('/')
     async getAllBooks(req: Request, res: Response): Promise<Response> {
         try {
             const { page = 1, limit = 10, name, price, author, category } = req.query;
@@ -32,9 +44,17 @@ export class BookController {
                 author ? author as string : undefined,
                 category ? category as string : undefined
             );
-            return res.status(200).json(books);
+
+            if (!books || books.length === 0) {
+                return res.status(HttpStatusCode.NOT_FOUND).json(
+                    new ApiResponse(HttpStatusCode.NOT_FOUND, "", "Book does not exist!")
+                );
+            }
+            return res.status(HttpStatusCode.OK).json(
+                new ApiResponse(HttpStatusCode.OK, books)
+            );
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message });
         }
     }
 
